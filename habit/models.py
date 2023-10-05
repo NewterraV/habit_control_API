@@ -9,13 +9,13 @@ class HabitPeriod(models.TextChoices):
     """
     Класс описывает экземпляры для выбора периода
     """
-    ONE_DAY = (timedelta(days=1), _('One day'))
-    TWO_DAY = (timedelta(days=2), _('Two days'))
-    THREE_DAY = (timedelta(days=3), _('Three days'))
-    FOUR_DAY = (timedelta(days=4), _('Four days'))
-    FIVE_DAY = (timedelta(days=5), _('Five days'))
-    SIX_DAY = (timedelta(days=6), _('Six days'))
-    SEVEN_DAY = (timedelta(days=7), _('Seven days'))
+    ONE_DAY = (1, _('One day'))
+    TWO_DAY = (2, _('Two days'))
+    THREE_DAY = (3, _('Three days'))
+    FOUR_DAY = (4, _('Four days'))
+    FIVE_DAY = (5, _('Five days'))
+    SIX_DAY = (6, _('Six days'))
+    SEVEN_DAY = (7, _('Seven days'))
 
 
 class Habit(models.Model):
@@ -27,8 +27,8 @@ class Habit(models.Model):
     place = models.CharField(max_length=200, verbose_name=_('place'))
     action = models.TextField(verbose_name=_('action'))
     start_time = models.TimeField(verbose_name=_('start time'))
-    lide_time = models.TimeField(verbose_name=_('lead time'))
-    period = models.TimeField(choices=HabitPeriod.choices, verbose_name=_('period'), default=HabitPeriod.ONE_DAY)
+    lide_time = models.IntegerField(verbose_name=_('lead time'))
+    period = models.PositiveIntegerField(choices=HabitPeriod.choices, verbose_name=_('period'), default=HabitPeriod.ONE_DAY)
     is_nice = models.BooleanField(verbose_name=_('sign of a pleasant habit'), **NULLABLE)
     is_publish = models.BooleanField(verbose_name=_('is publish'), **NULLABLE)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_('owner'), related_name='habit')
