@@ -12,6 +12,8 @@ class HabitViewSet(viewsets.ModelViewSet):
     default_serializers = HabitSerializer
     serializer_class = HabitSerializer
 
+    # def perform_update(self, serializer):
+    #     habit = serializer.save()
 
 class HabitListAPIView(generics.ListAPIView):
 

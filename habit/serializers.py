@@ -46,3 +46,29 @@ class HabitSerializer(serializers.ModelSerializer):
             nice.save()
             return habit
         return habit
+
+    def update(self, instance, validated_data):
+        """Переопределение для обновления привычки"""
+
+        # Извлекаем данные из информации прошедшей валидацию и получаем объект
+        reward_data = validated_data.pop('reward')
+
+        # получаем объект модели Reward
+        Reward.objects.filter(id=instance.reward.pk).update(**reward_data)
+        reward = Reward.objects.filter(id=instance.reward.pk).first()
+
+        # Может быть, что пользователь изменит привычку с полезной на приятную или наоборот.
+        # Логика ниже обрабатывает данное изменение
+        if not reward.is_nice and Nice.objects.filter(habit=instance.pk):
+            Nice.objects.filter(habit=instance.pk).delete()
+            return super().update(instance, validated_data)
+        if reward.is_nice:
+            nice = Nice.objects.filter(habit=instance.pk)
+            reward.reward = None
+            reward.nice = None
+            reward.save()
+            if nice:
+                return super().update(instance, validated_data)
+            new_nice = Nice.objects.create(habit=instance)
+            new_nice.save()
+        return super().update(instance, validated_data)
