@@ -35,6 +35,6 @@ class Verify(models.Model):
     """
     Модель для проверки кода верификации пользователя
     """
-    user_code = models.PositiveIntegerField(max_length=5, verbose_name=_('user code'), **NULLABLE)
+    user_code = models.PositiveIntegerField(verbose_name=_('user code'), **NULLABLE)
     verify_code = models.PositiveIntegerField(default=randint(00000, 99999), verbose_name=_('verify code'))
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name=_('user'), related_name='verify')
