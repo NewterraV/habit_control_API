@@ -37,6 +37,7 @@ class Habit(models.Model):
     class Meta:
         verbose_name = _('habit')
         verbose_name_plural = _('habits')
+        ordering = ['name']
 
 
 class Nice(models.Model):

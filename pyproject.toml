@@ -11,6 +11,9 @@ django = "^4.2.6"
 psycopg2-binary = "^2.9.9"
 django-rest-framework = "^0.1.0"
 python-dotenv = "^1.0.0"
+django-cors-headers = "^4.2.0"
+drf-yasg = "^1.21.7"
+redis = "^5.0.1"
 
 
 [build-system]

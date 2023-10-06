@@ -12,6 +12,7 @@ class RewardValidator:
         reward = value.get('reward')
         nice = value.get('nice')
         is_nice = value.get('is_nice')
+        print(nice)
         if reward or nice:
             if is_nice:
                 raise ValidationError(_('Для приятной привычки не может быть создано вознаграждение'))

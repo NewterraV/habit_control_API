@@ -4,6 +4,13 @@ from habit.models import Habit, Reward, Nice
 from habit.validators import RewardValidator, LideTimeValidator
 
 
+class HabitReadSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Habit
+        fields = 'name', 'place', 'action', 'start_time', 'lide_time'
+
+
 class RewardSerializer(serializers.ModelSerializer):
     """
     Базовый сериализатор для модели Reward
@@ -13,9 +20,11 @@ class RewardSerializer(serializers.ModelSerializer):
         RewardValidator()
     ]
 
+    nice_detail = HabitReadSerializer(source='nice.habit', read_only=True)
+
     class Meta:
         model = Reward
-        fields = '__all__'
+        fields = 'is_nice', 'nice', 'reward', 'habit', 'nice_detail'
 
 
 class HabitSerializer(serializers.ModelSerializer):
