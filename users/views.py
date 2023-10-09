@@ -1,8 +1,9 @@
-from django.shortcuts import render
+
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView, UpdateAPIView, DestroyAPIView, RetrieveAPIView
+from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
 
 from users.models import User, Verify
@@ -36,9 +37,10 @@ class UserUpdateAPIView(UpdateAPIView):
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
 
-    # def get_object(self):
-    #     return User.objects.get()
+    def get_object(self):
+        return self.request.user
 
 
 @method_decorator(name='delete', decorator=swagger_auto_schema(
@@ -49,6 +51,10 @@ class UserUpdateAPIView(UpdateAPIView):
 class UserDeleteAPIView(DestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
@@ -57,8 +63,13 @@ class UserDeleteAPIView(DestroyAPIView):
     tags=[_('Авторизация')]
 ))
 class UserDetailAPIView(RetrieveAPIView):
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
 
 
 @method_decorator(name='put', decorator=swagger_auto_schema(

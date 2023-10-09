@@ -16,7 +16,7 @@ class VerifyValidator:
     def __call__(self, value):
         user_code = value.get('user_code')
 
-        if len(user_code) != 5:
+        if len(str(user_code)) != 5:
             raise ValidationError(_('Количество символов должно быть равно 5-ти'))
 
         if user_code != self.obj.verify_code:
