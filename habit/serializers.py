@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.utils.translation import gettext_lazy as _
 
 from habit.models import Habit, Reward, Nice
 from habit.validators import RewardValidator, LideTimeValidator
@@ -20,7 +21,7 @@ class RewardSerializer(serializers.ModelSerializer):
         RewardValidator()
     ]
 
-    nice_detail = HabitReadSerializer(source='nice.habit', read_only=True)
+    nice_detail = HabitReadSerializer(source='nice.habit', read_only=True, label=_('data about a pleasant habit'))
 
     class Meta:
         model = Reward
@@ -32,7 +33,7 @@ class HabitSerializer(serializers.ModelSerializer):
     Базовый сериализатор для вывода модели привычек
     """
 
-    reward = RewardSerializer()
+    reward = RewardSerializer(label=_('rewards'))
 
     validators = [
         LideTimeValidator(fields='lide_time')

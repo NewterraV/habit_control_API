@@ -9,7 +9,6 @@ def send_verify(obj: Any) -> None:
     :param obj: Экземпляр модели Verify
     :return: None
     """
-    print(f'{obj.verify_code} , {obj.pk}, {settings.EMAIL_HOST_USER}, {obj.user.email}')
     send_mail(
         'Подтвердите ваш Email',
         f'Код верификации {obj.verify_code} \n Ссылка для ввода кода верификации: '
