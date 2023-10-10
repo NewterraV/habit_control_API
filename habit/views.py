@@ -59,6 +59,13 @@ class HabitViewSet(viewsets.ModelViewSet):
     serializer_class = HabitSerializer
     pagination_class = HabitsPagination
 
+    def perform_create(self, serializer):
+        """Переопределение метода для автоматической установки владельца"""
+        habit = serializer.save()
+        habit.owner = self.request.user
+        habit.save()
+
+
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
         operation_id=_('Получение списка общедоступных привычек'),

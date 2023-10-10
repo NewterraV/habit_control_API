@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from config import settings
 from users.models import User, NULLABLE
 
 
@@ -22,15 +23,22 @@ class Habit(models.Model):
     Класс модели привычки
     """
 
-    name = models.CharField(max_length=150, verbose_name=_('name'),)
+    name = models.CharField(max_length=150, verbose_name=_('name'), )
     place = models.CharField(max_length=200, verbose_name=_('place'))
     action = models.TextField(verbose_name=_('action'))
     start_time = models.TimeField(verbose_name=_('start time'))
     lide_time = models.IntegerField(verbose_name=_('lead time'))
-    period = models.PositiveIntegerField(choices=HabitPeriod.choices, verbose_name=_('period'),
+    period = models.PositiveIntegerField(choices=HabitPeriod.choices,
+                                         verbose_name=_('period'),
                                          default=HabitPeriod.ONE_DAY)
     is_publish = models.BooleanField(verbose_name=_('is publish'), **NULLABLE)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_('owner'), related_name='habit')
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL,
+                              on_delete=models.CASCADE,
+                              verbose_name=_('owner'),
+                              related_name='habit',
+                              **NULLABLE
+                              )
+    task = models.PositiveIntegerField(default=0, verbose_name=_('periodic task'))
 
     def __str__(self):
         return f'{self.name} - {self.period}'
