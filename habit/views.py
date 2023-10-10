@@ -8,6 +8,9 @@ from habit.paginators import HabitsPagination
 from habit.serializers import HabitSerializer
 from drf_yasg.utils import swagger_auto_schema
 
+from habit.services import create_periodic_task
+from habit.tasks import task_create_periodic_task, task_delete_periodic_task
+
 
 @method_decorator(name='list', decorator=swagger_auto_schema(
     operation_id=_('Получение списка привычек пользователя'),
@@ -60,11 +63,16 @@ class HabitViewSet(viewsets.ModelViewSet):
     pagination_class = HabitsPagination
 
     def perform_create(self, serializer):
-        """Переопределение метода для автоматической установки владельца"""
+        """Переопределение метода для автоматической установки владельца и создания периодической задачи"""
         habit = serializer.save()
         habit.owner = self.request.user
         habit.save()
+        task_create_periodic_task.delay(habit.pk)
 
+    def perform_destroy(self, instance):
+        """Переопределение для удаления периодической задачи при удалении привычки"""
+        task_delete_periodic_task.delay(instance.task)
+        instance.delete()
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
