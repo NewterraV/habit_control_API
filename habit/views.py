@@ -8,8 +8,7 @@ from habit.paginators import HabitsPagination
 from habit.serializers import HabitSerializer
 from drf_yasg.utils import swagger_auto_schema
 
-from habit.services import create_periodic_task
-from habit.tasks import task_create_periodic_task, task_delete_periodic_task
+from habit.tasks import task_create_periodic_task, task_delete_periodic_task, task_update_periodic_task
 
 
 @method_decorator(name='list', decorator=swagger_auto_schema(
@@ -68,6 +67,11 @@ class HabitViewSet(viewsets.ModelViewSet):
         habit.owner = self.request.user
         habit.save()
         task_create_periodic_task.delay(habit.pk)
+
+    def perform_update(self, serializer):
+        """Переопределение для обновления периодической задачи при обновлении привычки"""
+        habit = serializer.save()
+        task_update_periodic_task.delay(habit.pk)
 
     def perform_destroy(self, instance):
         """Переопределение для удаления периодической задачи при удалении привычки"""

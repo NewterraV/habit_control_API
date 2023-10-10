@@ -1,5 +1,6 @@
 from celery import shared_task
-from habit.services import send_telegram_message, create_periodic_task, delete_periodic_task
+from habit.services import send_telegram_message
+from habit.src.periodic_tusks import HabitPeriodicTask
 
 
 @shared_task
@@ -23,7 +24,19 @@ def task_create_periodic_task(habit_pk):
     :param habit_pk: Экземпляр модели Habit
     :return: PK созданной периодической задачи
     """
-    create_periodic_task(habit_pk)
+    habit = HabitPeriodicTask(habit_pk)
+    habit.create_periodic_task()
+
+
+@shared_task
+def task_update_periodic_task(habit_pk):
+    """
+    Отложенная задача обновляет модель периодической задачи
+    :param habit_pk: id экземпляра модели Habit
+    :return: None
+    """
+    habit = HabitPeriodicTask(habit_pk)
+    habit.update_periodic_task()
 
 
 @shared_task
@@ -33,4 +46,5 @@ def task_delete_periodic_task(pk):
     :param pk: PK задачи
     :return: None
     """
-    delete_periodic_task(pk)
+    habit = HabitPeriodicTask()
+    habit.delete_periodic_task(pk)
