@@ -16,7 +16,6 @@ class TelegramAPI:
             :param text: сообщение
             :return: код ответа
             """
-        print(f'Я выполнилась{telegram}')
 
         url = (f'https://api.telegram.org/bot{self.token}/'
                f'sendMessage')
