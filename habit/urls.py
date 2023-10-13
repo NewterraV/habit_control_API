@@ -10,5 +10,5 @@ router.register('habits', HabitViewSet, basename='habits')
 
 urlpatterns = [
     path('habits/publish/', HabitListAPIView.as_view(), name='habits_publish'),
-    path('habits/publish/detail/<int:pk>', HabitDetailView.as_view(), name='habits_detail_publish')
+    path('habits/publish/<int:pk>/', HabitDetailView.as_view(), name='habits_detail_publish')
 ] + router.urls

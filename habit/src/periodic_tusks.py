@@ -15,7 +15,8 @@ class HabitPeriodicTask:
 
         self.habit = Habit.objects.get(pk=habit_pk) if habit_pk else None
         self.task = PeriodicTask.objects.filter(pk=self.habit.task).first() if habit_pk else None
-        self.task_name = f'task/{self.habit.name}/{self.habit.pk}/{self.habit.period}' if habit_pk else None
+        self.task_name = f'task/{self.habit.name}/pk - {self.habit.pk}/period - {self.habit.period}' if habit_pk else \
+            None
         self.data = {'telegram': self.habit.owner.telegram,
                      'place': self.habit.place,
                      'action': self.habit.action,
