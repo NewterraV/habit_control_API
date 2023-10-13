@@ -1,6 +1,5 @@
 from celery import shared_task
 
-from habit.models import Habit
 from habit.src.telegram_api import TelegramAPI
 from habit.src.periodic_tusks import HabitPeriodicTask
 
