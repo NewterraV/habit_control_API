@@ -1,5 +1,6 @@
 import requests
 from config import settings
+from users.tasks import task_multiple_update_periodic_task
 from users.models import User
 
 
@@ -60,6 +61,8 @@ class TelegramAPI:
             if user.telegram_chat != message['chat']['id']:
                 user.telegram_chat = message['chat']['id']
                 user.save()
+                task_multiple_update_periodic_task.delay(user_id=user.pk)
+
                 self.send_message(
                     telegram=user.telegram_chat,
                     text='Регистрация чата успешно пройдена!')

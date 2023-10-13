@@ -1,4 +1,6 @@
 from celery import shared_task
+
+from habit.models import Habit
 from habit.src.telegram_api import TelegramAPI
 from habit.src.periodic_tusks import HabitPeriodicTask
 
@@ -34,8 +36,8 @@ def task_create_periodic_task(habit_pk):
     :param habit_pk: Экземпляр модели Habit
     :return: PK созданной периодической задачи
     """
-    habit = HabitPeriodicTask(habit_pk)
-    habit.create_periodic_task()
+    task = HabitPeriodicTask(habit_pk)
+    task.create_periodic_task()
 
 
 @shared_task
@@ -45,8 +47,8 @@ def task_update_periodic_task(habit_pk):
     :param habit_pk: id экземпляра модели Habit
     :return: str
     """
-    habit = HabitPeriodicTask(habit_pk)
-    habit.update_periodic_task()
+    task = HabitPeriodicTask(habit_pk)
+    task.update_periodic_task()
 
 
 @shared_task
@@ -56,5 +58,5 @@ def task_delete_periodic_task(pk):
     :param pk: PK задачи
     :return: None
     """
-    habit = HabitPeriodicTask()
-    habit.delete_periodic_task(pk)
+    task = HabitPeriodicTask()
+    task.delete_periodic_task(pk)
