@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 
 from users.models import User, Verify
-from users.services import send_verify
+from users.tasks import task_send_verify
 from users.validators import VerifyValidator
 
 
@@ -29,7 +29,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         verify = Verify.objects.create(user=user)
         verify.save()
         # Отправляем код верификации
-        send_verify(verify)
+        task_send_verify.delay(verify.pk)
 
         return user
 

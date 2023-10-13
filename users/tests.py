@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from users.models import User, Verify
+from users.services import send_verify
 
 
 class GetUserMixin:
@@ -167,3 +168,20 @@ class UserAPITestCase(GetUserMixin, APITestCase):
         print(response.json())
         self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEquals(response.json(), {'non_field_errors': ['Количество символов должно быть равно 5-ти']})
+
+    def test_send_verify(self):
+        self.client.post(
+            '/auth/user/create/',
+            {
+                'last_name': 'Иванов',
+                'first_name': 'Иван',
+                'email': 'vakin49282@locawin.com',
+                'telegram': 'vrsfesfsef',
+                "password": "qwer1234"
+            },
+            format='json'
+        )
+        verify = Verify.objects.all().first()
+
+        send = send_verify(verify.pk)
+        self.assertEquals(send, 1)

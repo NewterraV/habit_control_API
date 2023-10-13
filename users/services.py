@@ -2,17 +2,22 @@ from typing import Any
 from django.core.mail import send_mail
 from django.conf import settings
 
+from users.models import Verify
 
-def send_verify(obj: Any) -> None:
+
+def send_verify(verify_pk: Any) -> int:
     """
     Метод отправляет на email нового пользователя код для активации аккаунта
-    :param obj: Экземпляр модели Verify
-    :return: None
+    :param verify_pk: pk модели Verify
+    :return: количество успешно отправленных писем
     """
-    send_mail(
+    verify = Verify.objects.get(pk=verify_pk)
+
+    status = send_mail(
         'Подтвердите ваш Email',
-        f'Код верификации {obj.verify_code} \n Ссылка для ввода кода верификации: '
-        f'http://127.0.0.1:8000/auth/verify/{obj.pk}',
+        f'Код верификации {verify.verify_code} \n Ссылка для ввода кода верификации: '
+        f'http://127.0.0.1:8000/auth/verify/{verify.pk}',
         settings.EMAIL_HOST_USER,
-        [obj.user.email]
+        [verify.user.email]
     )
+    return status
