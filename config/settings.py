@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_yasg',
     'django_celery_beat',
+    'django_filters',
 
     'users',
     'habit',
@@ -68,9 +69,9 @@ MIDDLEWARE = [
 ]
 
 REST_FRAMEWORK = {
-    # 'DEFAULT_FILTER_BACKENDS': (
-    #     'django_filters.rest_framework.DjangoFilterBackend',
-    # ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),

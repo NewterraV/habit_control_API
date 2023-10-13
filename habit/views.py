@@ -3,6 +3,8 @@ from rest_framework import generics
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.filters import OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
 
 from habit.models import Habit
 from habit.paginators import HabitsPagination
@@ -75,10 +77,13 @@ from habit.tasks import (task_create_periodic_task, task_delete_periodic_task,
 ))
 class HabitViewSet(viewsets.ModelViewSet):
     queryset = Habit.objects.all()
-    default_serializers = HabitSerializer
     serializer_class = HabitSerializer
     pagination_class = HabitsPagination
     permission_classes = [IsAuthenticated, IsOwnerPermissions]
+    filter_backends = [OrderingFilter, DjangoFilterBackend]
+    ordering_fields = ['name', 'period', 'place',]
+    filterset_fields = ['place', 'lide_time', 'period', 'is_publish',
+                        'reward',]
 
     def get_queryset(self):
         return Habit.objects.filter(owner=self.request.user)
@@ -123,6 +128,10 @@ class HabitListAPIView(generics.ListAPIView):
     serializer_class = HabitSerializer
     pagination_class = HabitsPagination
     permission_classes = [IsAuthenticated]
+    filter_backends = [OrderingFilter, DjangoFilterBackend]
+    ordering_fields = ['name', 'period', 'place',]
+    filterset_fields = ['place', 'lide_time', 'period', 'is_publish',
+                        'reward',]
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(
