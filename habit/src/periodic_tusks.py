@@ -23,11 +23,12 @@ class HabitPeriodicTask:
             f'/period - {self.habit.period}'
         ) if habit_pk else None
 
-        self.data = {'telegram': self.habit.owner.telegram,
-                     'place': self.habit.place,
-                     'action': self.habit.action,
-                     'lide_time': self.habit.lide_time
-                     } if habit_pk else None
+        self.data = {'telegram': self.habit.owner.telegram_chat,
+                     "text": "Привет!\nПора потренировать привычку!\n"
+                             f"Тебе нужно {self.habit.action} "
+                             f"в {self.habit.place} "
+                             f"за {self.habit.lide_time} секунд.\n"
+                             f"Поехали!"} if habit_pk else None
 
         self.now = datetime.utcnow()
 

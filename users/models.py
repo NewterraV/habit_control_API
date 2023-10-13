@@ -22,6 +22,8 @@ class User(AbstractUser):
     email = models.EmailField(unique=True, verbose_name=_('email'))
     telegram = models.CharField(max_length=150, verbose_name=_('telegram id'),
                                 **NULLABLE)
+    telegram_chat = models.PositiveIntegerField(**NULLABLE,
+                                                verbose_name=_('chat id'))
     is_active = models.BooleanField(default=False, verbose_name=_('active'))
 
     USERNAME_FIELD = 'email'

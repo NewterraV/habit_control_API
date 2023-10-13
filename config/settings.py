@@ -202,5 +202,13 @@ CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 
 CELERY_BEAT_SCHEDULE = {
-
+    'get_telegram_id': {
+        'task': 'habit.tasks.task_get_telegram_id',
+        'schedule': timedelta(minutes=1),
+    },
 }
+
+# Токен телеграм
+# https://core.telegram.org/bots/
+
+TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')

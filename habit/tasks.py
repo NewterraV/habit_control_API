@@ -1,19 +1,28 @@
 from celery import shared_task
-from habit.services import send_telegram_message
+from habit.src.telegram_api import TelegramAPI
 from habit.src.periodic_tusks import HabitPeriodicTask
 
 
 @shared_task
-def task_send_telegram_message(telegram, place, action, lide_time) -> None:
+def task_send_telegram_message(chat_id, text) -> None:
     """
     Отложенная задача по отправке телеграм уведомления
-    :param telegram: id телеграм пользователя
-    :param place: место выполнения задачи
-    :param action: действие
-    :param lide_time: время за которое необходимо выполнить задачу
-    :return: None
+    :param chat_id: id телеграм пользователя
+    :param text: сообщение
+    :return: str
     """
-    send_telegram_message(telegram, place, action, lide_time)
+    telegram = TelegramAPI()
+    status = telegram.send_message(chat_id, text)
+    return status
+
+
+@shared_task
+def task_get_telegram_id():
+    """Задача проверяет обновления и на их основе определяет ID чата
+    телеграм конкретного пользователя"""
+    telegram = TelegramAPI()
+    result = telegram.get_chat_id()
+    return result
 
 
 @shared_task
@@ -34,7 +43,7 @@ def task_update_periodic_task(habit_pk):
     """
     Отложенная задача обновляет модель периодической задачи
     :param habit_pk: id экземпляра модели Habit
-    :return: None
+    :return: str
     """
     habit = HabitPeriodicTask(habit_pk)
     habit.update_periodic_task()
