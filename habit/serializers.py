@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 
 from habit.models import Habit, Reward, Nice
-from habit.validators import RewardValidator, LideTimeValidator
+from habit.validators import RewardValidator, LideTimeValidator, PeriodValidator
 
 
 class HabitReadSerializer(serializers.ModelSerializer):
@@ -36,7 +36,8 @@ class HabitSerializer(serializers.ModelSerializer):
     reward = RewardSerializer(label=_('rewards'))
 
     validators = [
-        LideTimeValidator(fields='lide_time')
+        LideTimeValidator(fields='lide_time'),
+        PeriodValidator(fields='period')
     ]
 
     class Meta:

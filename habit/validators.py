@@ -12,7 +12,6 @@ class RewardValidator:
         reward = value.get('reward')
         nice = value.get('nice')
         is_nice = value.get('is_nice')
-        print(nice)
         if reward or nice:
             if is_nice:
                 raise ValidationError(_('Для приятной привычки не может быть создано вознаграждение'))
@@ -35,3 +34,15 @@ class LideTimeValidator:
         time = value.get('lide_time')
         if time > 120:
             raise ValidationError(_('Время выполнения не может быть больше 120 секунд'))
+
+
+class PeriodValidator:
+    """Валидатор периода исполнения привычки"""
+
+    def __init__(self, fields):
+        self.fields = fields
+
+    def __call__(self, value):
+        period = value.get('period')
+        if period < 1 or period > 7:
+            raise ValidationError(_('Период может быть числом от 1 до 7'))
