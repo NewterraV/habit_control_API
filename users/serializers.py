@@ -35,7 +35,8 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = 'pk', 'first_name', 'last_name', 'email', 'password', 'telegram',
+        fields = ('pk', 'first_name', 'last_name', 'email', 'password',
+                  'telegram',)
 
 
 class VerifySerializer(serializers.ModelSerializer):

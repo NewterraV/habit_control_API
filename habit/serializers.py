@@ -2,7 +2,8 @@ from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 
 from habit.models import Habit, Reward, Nice
-from habit.validators import RewardValidator, LideTimeValidator, PeriodValidator
+from habit.validators import (RewardValidator, LideTimeValidator,
+                              PeriodValidator)
 
 
 class HabitReadSerializer(serializers.ModelSerializer):
@@ -21,7 +22,9 @@ class RewardSerializer(serializers.ModelSerializer):
         RewardValidator()
     ]
 
-    nice_detail = HabitReadSerializer(source='nice.habit', read_only=True, label=_('data about a pleasant habit'))
+    nice_detail = HabitReadSerializer(source='nice.habit',
+                                      read_only=True,
+                                      label=_('data about a pleasant habit'))
 
     class Meta:
         model = Reward
@@ -42,7 +45,8 @@ class HabitSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Habit
-        fields = 'id', 'name', 'place', 'action', 'start_time', 'lide_time', 'period', 'is_publish', 'owner', 'reward'
+        fields = ('id', 'name', 'place', 'action', 'start_time', 'lide_time',
+                  'period', 'is_publish', 'owner', 'reward')
 
     def create(self, validated_data):
         """Переопределение для создания привычки"""
@@ -68,8 +72,8 @@ class HabitSerializer(serializers.ModelSerializer):
         Reward.objects.filter(id=instance.reward.pk).update(**reward_data)
         reward = Reward.objects.filter(id=instance.reward.pk).first()
 
-        # Может быть, что пользователь изменит привычку с полезной на приятную или наоборот.
-        # Логика ниже обрабатывает данное изменение
+        # Может быть, что пользователь изменит привычку с полезной на приятную
+        # или наоборот. Логика ниже обрабатывает данное изменение
         if not reward.is_nice and Nice.objects.filter(habit=instance.pk):
             Nice.objects.filter(habit=instance.pk).delete()
             return super().update(instance, validated_data)

@@ -116,16 +116,20 @@ AUTH_USER_MODEL = 'users.User'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'NumericPasswordValidator',
     },
 ]
 
@@ -133,8 +137,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # Настройки для simplejwt
 # https://django-rest-framework-simplejwt.readthedocs.io/en/latest/
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(os.getenv('ACCESS_TOKEN_LIFETIME'))),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=int(os.getenv('REFRESH_TOKEN_LIFETIME'))),
+    'ACCESS_TOKEN_LIFETIME':
+        timedelta(minutes=int(os.getenv('ACCESS_TOKEN_LIFETIME'))),
+    'REFRESH_TOKEN_LIFETIME':
+        timedelta(days=int(os.getenv('REFRESH_TOKEN_LIFETIME'))),
 }
 
 

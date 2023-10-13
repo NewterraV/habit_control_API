@@ -167,7 +167,12 @@ class UserAPITestCase(GetUserMixin, APITestCase):
         )
         print(response.json())
         self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEquals(response.json(), {'non_field_errors': ['Количество символов должно быть равно 5-ти']})
+        self.assertEquals(
+            response.json(),
+            {
+                'non_field_errors': ['Количество символов должно '
+                                     'быть равно 5-ти']
+             })
 
     def test_send_verify(self):
         self.client.post(

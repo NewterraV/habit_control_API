@@ -14,13 +14,16 @@ class RewardValidator:
         is_nice = value.get('is_nice')
         if reward or nice:
             if is_nice:
-                raise ValidationError(_('Для приятной привычки не может быть создано вознаграждение'))
+                raise ValidationError(_('Для приятной привычки не может быть '
+                                        'создано вознаграждение'))
 
             if reward and nice:
-                raise ValidationError(_('Не может быть выбрано 2 вознаграждения одновременно'))
+                raise ValidationError(_('Не может быть выбрано 2 '
+                                        'вознаграждения одновременно'))
 
         elif not reward and not nice and not is_nice:
-            raise ValidationError(_('Не выбрано вознаграждение, должна быть выбрана либо приятная привычка либо '
+            raise ValidationError(_('Не выбрано вознаграждение, должна быть '
+                                    'выбрана либо приятная привычка либо '
                                     'описано вознаграждение'))
 
 
@@ -33,7 +36,8 @@ class LideTimeValidator:
     def __call__(self, value):
         time = value.get('lide_time')
         if time > 120:
-            raise ValidationError(_('Время выполнения не может быть больше 120 секунд'))
+            raise ValidationError(_('Время выполнения не может быть больше '
+                                    '120 секунд'))
 
 
 class PeriodValidator:

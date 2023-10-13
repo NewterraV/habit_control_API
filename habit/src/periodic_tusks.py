@@ -14,25 +14,41 @@ class HabitPeriodicTask:
         """
 
         self.habit = Habit.objects.get(pk=habit_pk) if habit_pk else None
-        self.task = PeriodicTask.objects.filter(pk=self.habit.task).first() if habit_pk else None
-        self.task_name = f'task/{self.habit.name}/pk - {self.habit.pk}/period - {self.habit.period}' if habit_pk else \
-            None
+
+        self.task = PeriodicTask.objects.filter(
+            pk=self.habit.task).first() if habit_pk else None
+
+        self.task_name = (
+            f'task/{self.habit.name}/pk - {self.habit.pk}'
+            f'/period - {self.habit.period}'
+        ) if habit_pk else None
+
         self.data = {'telegram': self.habit.owner.telegram,
                      'place': self.habit.place,
                      'action': self.habit.action,
                      'lide_time': self.habit.lide_time
                      } if habit_pk else None
+
         self.now = datetime.utcnow()
-        self.time = datetime.combine(self.now.date(), self.habit.start_time) if habit_pk else None
-        self.start_time = (self.time if self.habit.start_time > self.now.time() else self.time + timedelta(days=1)) \
-            if habit_pk else None
+
+        self.time = datetime.combine(
+            self.now.date(),
+            self.habit.start_time
+        ) if habit_pk else None
+
+        self.start_time = (
+            self.time if self.habit.start_time > self.now.time()
+            else self.time + timedelta(days=1)
+        ) if habit_pk else None
+
         self.schedule, self.create = IntervalSchedule.objects.get_or_create(
             every=self.habit.period, period=IntervalSchedule.DAYS
         ) if habit_pk else (None, None)
 
     def create_periodic_task(self):
         """
-        Метод получает экземпляр привычки и на основе его атрибутов создает периодическую задачу. Необходим habit_id.
+        Метод получает экземпляр привычки и на основе его атрибутов создает
+        периодическую задачу. Необходим habit_id.
         :return: None
         """
 

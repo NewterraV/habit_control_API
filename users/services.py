@@ -15,7 +15,8 @@ def send_verify(verify_pk: Any) -> int:
 
     status = send_mail(
         'Подтвердите ваш Email',
-        f'Код верификации {verify.verify_code} \n Ссылка для ввода кода верификации: '
+        f'Код верификации {verify.verify_code} \n Ссылка для ввода '
+        f'кода верификации: '
         f'http://127.0.0.1:8000/auth/verify/{verify.pk}',
         settings.EMAIL_HOST_USER,
         [verify.user.email]
