@@ -52,7 +52,8 @@ class HabitPeriodicTask:
         периодическую задачу. Необходим habit_id.
         :return: None
         """
-
+        if self.data['telegram'] is None:
+            return "Не возможно создать задачу, не указан ник телеграм"
         task = PeriodicTask.objects.create(
             name=self.task_name,
             task='habit.tasks.task_send_telegram_message',

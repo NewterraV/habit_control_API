@@ -14,8 +14,8 @@ from users.serializers import (UserSerializer, VerifySerializer,
 @method_decorator(name='post', decorator=swagger_auto_schema(
     operation_id=_('Регистрация пользователя'),
     operation_description=_(
-        "Запрос возвращает список привычек принадлежащих "
-        "аутентифицированному пользователю."),
+        "Запрос позволяет зарегистрировать нового пользователя."
+        "Обратите внимание, телеграм логин передается без знака @"),
     tags=[_('Авторизация')]
 ))
 class UserCreateAPIView(CreateAPIView):
