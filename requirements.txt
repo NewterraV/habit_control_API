@@ -1,0 +1,12 @@
+django
+psycopg2-binary
+django-rest-framework
+python-dotenv
+django-cors-headers
+drf-yasg
+redis
+djangorestframework-simplejwt
+celery
+django-celery-beat
+requests
+django-filter
