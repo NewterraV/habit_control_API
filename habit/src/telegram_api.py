@@ -10,10 +10,10 @@ class TelegramAPI:
     def __init__(self):
         self.token = settings.TELEGRAM_TOKEN
 
-    def send_message(self, telegram, text):
+    def send_message(self, chat_id, text):
         """
             Метод отправки телеграм уведомления.
-            :param telegram: ID телеграм чата
+            :param chat_id ID телеграм чата
             :param text: сообщение
             :return: код ответа
             """
@@ -21,7 +21,7 @@ class TelegramAPI:
         url = (f'https://api.telegram.org/bot{self.token}/'
                f'sendMessage')
         params = {
-            "chat_id": telegram,
+            "chat_id": chat_id,
             "text": text
 
         }

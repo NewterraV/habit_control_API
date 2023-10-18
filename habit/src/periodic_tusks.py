@@ -23,7 +23,7 @@ class HabitPeriodicTask:
             f'/period - {self.habit.period}'
         ) if habit_pk else None
 
-        self.data = {'telegram': self.habit.owner.telegram_chat,
+        self.data = {'chat_id': self.habit.owner.telegram_chat,
                      "text": "Привет!\nПора потренировать привычку!\n"
                              f"Тебе нужно {self.habit.action} "
                              f"в {self.habit.place} "
@@ -52,7 +52,7 @@ class HabitPeriodicTask:
         периодическую задачу. Необходим habit_id.
         :return: None
         """
-        if self.data['telegram'] is None:
+        if self.data['chat_id'] is None:
             return "Невозможно создать задачу, не указан ник телеграм"
         task = PeriodicTask.objects.create(
             name=self.task_name,
@@ -75,6 +75,7 @@ class HabitPeriodicTask:
         self.task.interval = self.schedule
         self.task.kwargs = json.dumps(self.data)
         self.task.start_time = self.start_time
+        self.task.last_run_at = None
         self.task.save()
 
     @staticmethod
