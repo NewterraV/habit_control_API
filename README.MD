@@ -1,8 +1,15 @@
 # API сервис по контролю привычек
 Сервис создан для закрепления пользователем привычек.
 
-
 ## Установка
+### Базовая настройка
+Выполнить настройку в файле ```.env```
+
+Запуск через Docker
+```shell
+$ docker-compose up --build
+```
+
 ### Основные зависимости:
     python = "^3.11"
     django = "^4.2.6"
@@ -30,20 +37,10 @@ $ pip install poetry
 ```sh
 $ poetry install
 ```
-
-### Базовая настройка
-Выполнить настройку в файле ```.env```
-
-Запуск Worker
-```shell
-$ celery -A config worker --loglevel INFO
-```
-
-Запуск периодических задач
+#### Управление через менеджер зависимостей ```Pip```:
 ```sh
-$ celery -A config beat -l info 
-  --scheduler django_celery_beat.schedulers:DatabaseScheduler
-```
+$ pip install -r requirements.txt
+````
 
 ## Описание основной логики работы
 ##### Документация с описанием эндпоинтов
