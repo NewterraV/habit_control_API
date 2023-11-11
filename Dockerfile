@@ -3,7 +3,11 @@ FROM python:3.11
 WORKDIR /app
 
 # Установка зависимостей
-COPY ./requirements.txt /app/
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir "poetry==1.6.1"
+
+COPY poetry.lock pyproject.toml ./
+RUN poetry config virtualenvs.create false \
+     && poetry install --no-root
+
 COPY . .
 

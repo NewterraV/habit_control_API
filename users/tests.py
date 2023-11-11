@@ -31,6 +31,8 @@ class GetUserMixin:
         token = response.data.get('access')
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
 
+        return user
+
 
 class UserAPITestCase(GetUserMixin, APITestCase):
 

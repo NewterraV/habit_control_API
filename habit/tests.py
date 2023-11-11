@@ -39,7 +39,7 @@ class HabitAPITestCase(GetUserMixin, GetHabitMixin, APITestCase):
     """Testcase для представлений привычки"""
 
     def setUp(self):
-        self.get_user()
+        self.user = self.get_user()
 
     def test_create(self):
         """
