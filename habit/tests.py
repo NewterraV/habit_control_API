@@ -1,8 +1,10 @@
+from unittest.mock import ANY
+
 from rest_framework import status
 from rest_framework.test import APITestCase
 from django_celery_beat.models import PeriodicTask
 
-from habit.models import Habit, Reward
+from habit.models import Habit, Reward, Nice
 from users.tests import GetUserMixin
 from habit.src.periodic_tusks import HabitPeriodicTask
 
@@ -22,9 +24,9 @@ class GetHabitMixin:
         )
         return response
 
-    def update_habit(self):
+    def update_habit(self, id_habit):
         response = self.client.put(
-            '/habits/1/',
+            f'/habits/{id_habit}/',
             {"name": "Привычка обновлена", "place": "Место действия",
              "action": "Действие", "start_time": "13:56:00",
              "lide_time": 10, "period": 2, "is_publish": True,
@@ -55,18 +57,19 @@ class HabitAPITestCase(GetUserMixin, GetHabitMixin, APITestCase):
         self.assertEqual(Habit.objects.count(), 1)
         self.assertEqual(Reward.objects.count(), 1)
         self.assertEqual(response.json(),
-                         {"id": 1, "name": "Привычка",
+                         {"id": ANY, "name": "Привычка",
                           "place": "Место действия", "action": "Действие",
                           "start_time": "13:56:00", "lide_time": 100,
-                          "period": 1, "is_publish": True, "owner": 1,
+                          "period": 1, "is_publish": True,
+                          "owner": self.user.pk,
                           "reward": {"is_nice": False, "nice": None,
                                      "reward": "Описание вознаграждения",
-                                     "habit": 1, }}
+                                     "habit": ANY, }}
                          )
 
     def test_validation(self):
         """Тест валидации привычки"""
-        self.client.post(
+        nise = self.client.post(
             '/habits/',
             {"name": "Привычка", "place": "Место действия",
              "action": "Действие", "start_time": "13:56:00",
@@ -74,6 +77,8 @@ class HabitAPITestCase(GetUserMixin, GetHabitMixin, APITestCase):
              "reward": {"is_nice": True, }},
             format='json'
         )
+        id_nice = nise.json()['id']
+        nice = Nice.objects.filter(habit=id_nice).first()
         response = self.client.post(
             '/habits/',
             {"name": "Привычка", "place": "Место действия",
@@ -97,7 +102,7 @@ class HabitAPITestCase(GetUserMixin, GetHabitMixin, APITestCase):
              "action": "Действие", "start_time": "13:56:00",
              "lide_time": 120, "period": 0, "is_publish": True,
              "reward": {"is_nice": True, "reward": "Описание вознаграждения",
-                        "nice": 1}},
+                        "nice": nice.pk}},
             format='json'
         )
         self.assertEqual(response.json(), {
@@ -111,23 +116,24 @@ class HabitAPITestCase(GetUserMixin, GetHabitMixin, APITestCase):
 
     def test_update(self):
         """Тест обновления привычки и сопутствующих функций"""
-        self.create_habit()
+        habit = self.create_habit()
 
         # Проверка обновления основной информации о привычке
-        response = self.update_habit()
+        response = self.update_habit(habit.json()['id'])
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(),
-                         {"id": 1, "name": "Привычка обновлена",
+                         {"id": ANY, "name": "Привычка обновлена",
                           "place": "Место действия", "action": "Действие",
                           "start_time": "13:56:00", "lide_time": 10,
-                          "period": 2, "is_publish": True, "owner": 1,
+                          "period": 2, "is_publish": True,
+                          "owner": self.user.pk,
                           "reward": {"is_nice": False, "nice": None,
                                      "reward": "Описание вознаграждения",
-                                     "habit": 1, }})
+                                     "habit": ANY, }})
 
         # Проверка изменения привычки с полезной на приятную
         response = self.client.put(
-            '/habits/1/',
+            f'/habits/{habit.json()["id"]}/',
             {"name": "Привычка стала приятной", "place": "Место действия",
              "action": "Действие",
              "start_time": "13:56:00", "lide_time": 10, "period": 2,
@@ -136,15 +142,15 @@ class HabitAPITestCase(GetUserMixin, GetHabitMixin, APITestCase):
             format='json'
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        response = self.client.get('/habits/1/')
+        response = self.client.get(f'/habits/{habit.json()["id"]}/')
         self.assertEqual(response.json(),
-                         {"id": 1, "name": "Привычка стала приятной",
+                         {"id": ANY, "name": "Привычка стала приятной",
                           "place": "Место действия",
                           "action": "Действие", "start_time": "13:56:00",
                           "lide_time": 10, "period": 2,
-                          "is_publish": True, "owner": 1,
+                          "is_publish": True, "owner": ANY,
                           "reward": {"is_nice": True, "nice": None,
-                                     "reward": None, "habit": 1, }})
+                                     "reward": None, "habit": ANY, }})
 
     def test_list(self):
         """
@@ -159,30 +165,30 @@ class HabitAPITestCase(GetUserMixin, GetHabitMixin, APITestCase):
         self.assertEqual(response.json(),
                          {'count': 3, 'next': None, 'previous': None,
                           'results': [
-                              {'id': 1, 'name': 'Привычка',
+                              {'id': ANY, 'name': 'Привычка',
                                'place': 'Место действия',
                                'action': 'Действие', 'start_time': '13:56:00',
                                'lide_time': 100, 'period': 1,
-                               'is_publish': True, 'owner': 1,
+                               'is_publish': True, 'owner': self.user.pk,
                                'reward': {'is_nice': False, 'nice': None,
                                           'reward': 'Описание вознаграждения',
-                                          'habit': 1}},
-                              {'id': 2, 'name': 'Привычка',
+                                          'habit': ANY}},
+                              {'id': ANY, 'name': 'Привычка',
                                'place': 'Место действия',
                                'action': 'Действие', 'start_time': '13:56:00',
                                'lide_time': 100, 'period': 1,
-                               'is_publish': True, 'owner': 1,
+                               'is_publish': True, 'owner': self.user.pk,
                                'reward': {'is_nice': False, 'nice': None,
                                           'reward': 'Описание вознаграждения',
-                                          'habit': 2}},
-                              {'id': 3, 'name': 'Привычка',
+                                          'habit': ANY}},
+                              {'id': ANY, 'name': 'Привычка',
                                'place': 'Место действия',
                                'action': 'Действие', 'start_time': '13:56:00',
                                'lide_time': 100, 'period': 1,
-                               'is_publish': True, 'owner': 1,
+                               'is_publish': True, 'owner': self.user.pk,
                                'reward': {'is_nice': False, 'nice': None,
                                           'reward': 'Описание вознаграждения',
-                                          'habit': 3}}]}
+                                          'habit': ANY}}]}
                          )
 
     def test_detail(self):
@@ -196,26 +202,28 @@ class HabitAPITestCase(GetUserMixin, GetHabitMixin, APITestCase):
              "reward": {"is_nice": True}},
             format='json'
         )
-        self.client.post(
+        id_nice = Nice.objects.get().pk
+        habit = self.client.post(
             '/habits/',
             {"name": "Привычка", "place": "Место действия",
              "action": "Действие", "start_time": "13:56:00",
              "lide_time": 100,
              "period": 1, "is_publish": True,
-             "reward": {"is_nice": False, "nice": 1, }},
+             "reward": {"is_nice": False, "nice": id_nice, }},
             format='json'
         )
         response = self.client.get(
-            '/habits/2/'
+            f'/habits/{habit.json()["id"]}/'
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(),
-                         {'id': 2, 'name': 'Привычка',
+                         {'id': ANY, 'name': 'Привычка',
                           'place': 'Место действия', 'action': 'Действие',
                           'start_time': '13:56:00', 'lide_time': 100,
-                          'period': 1, 'is_publish': True, 'owner': 1,
-                          'reward': {'is_nice': False, 'nice': 1,
-                                     'reward': None, 'habit': 2,
+                          'period': 1, 'is_publish': True,
+                          'owner': self.user.pk,
+                          'reward': {'is_nice': False, 'nice': ANY,
+                                     'reward': None, 'habit': ANY,
                                      'nice_detail':
                                          {'name': 'Привычка приятная',
                                           'place': 'Место действия',
@@ -230,7 +238,7 @@ class HabitAPITestCase(GetUserMixin, GetHabitMixin, APITestCase):
 
         self.create_habit()
         self.create_habit()
-        self.client.post(
+        not_publish = self.client.post(
             '/habits/',
             {"name": "Привычка", "place": "Место действия",
              "action": "Действие", "start_time": "13:56:00",
@@ -244,29 +252,31 @@ class HabitAPITestCase(GetUserMixin, GetHabitMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()['count'], 2)
 
-        response = self.client.get('/habits/publish/3/')
+        response = self.client.get(
+            f'/habits/publish/{not_publish.json()["id"]}/')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        response = self.client.get('/habits/publish/1/')
-        print(response)
+        response = self.client.get(
+            f'/habits/publish/{str(int(not_publish.json()["id"]) - 1)}/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_work_periodic_task(self):
         """Тест работы с периодическими задачами на основе привычек"""
         # Проверка создания периодической задачи
-        self.create_habit()
-        habit_task = HabitPeriodicTask(1)
+        habit = self.create_habit()
+        habit_task = HabitPeriodicTask(habit_pk=habit.json()['id'])
         habit_task.create_periodic_task()
         self.assertEqual(PeriodicTask.objects.count(), 1)
 
         # Проверка обновления периодической задачи
-        self.update_habit()
-        habit_task = HabitPeriodicTask(1)
+        self.update_habit(habit.json()['id'])
+        habit_task = HabitPeriodicTask(habit_pk=habit.json()['id'])
         habit_task.update_periodic_task()
         task = PeriodicTask.objects.get(pk=habit_task.habit.task)
-        self.assertEqual(task.name,
-                         'task/Привычка обновлена/pk - 1/period - 2')
+        self.assertEqual(
+            task.name,
+            f'task/Привычка обновлена/pk - {habit.json()["id"]}/period - 2')
 
         # Проверка удаления периодической задачи
-        habit_task = HabitPeriodicTask(1)
+        habit_task = HabitPeriodicTask(habit_pk=habit.json()['id'])
         habit_task.delete_periodic_task(task_id=habit_task.habit.task)
         self.assertEqual(PeriodicTask.objects.count(), 0)

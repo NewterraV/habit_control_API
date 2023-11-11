@@ -1,3 +1,5 @@
+from unittest.mock import ANY
+
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -16,6 +18,7 @@ class GetUserMixin:
             email='test@test.com',
             is_active=True,
             telegram='vrsfesfsef',
+            telegram_chat='123456789'
         )
         user.save()
         user.set_password('qwer1234')
@@ -55,7 +58,7 @@ class UserAPITestCase(GetUserMixin, APITestCase):
         self.assertEquals(Verify.objects.count(), 1)
         self.assertEquals(response.json(),
                           {
-                              "pk": 1,
+                              "pk": ANY,
                               "first_name": "Иван",
                               "last_name": "Иванов",
                               "email": "vakin49282@locawin.com",
@@ -65,15 +68,15 @@ class UserAPITestCase(GetUserMixin, APITestCase):
 
     def test_detail(self):
         """Тест предоставления детальной информации о пользователе"""
-        self.get_user()
+        user = self.get_user()
         response = self.client.get(
-            '/auth/user/detail/1/'
+            f'/auth/user/detail/{user.pk}/'
         )
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(User.objects.count(), 1)
         self.assertEquals(response.json(),
                           {
-                              "pk": 1,
+                              "pk": ANY,
                               "first_name": "Иван",
                               "last_name": "Иванов",
                               "email": "test@test.com",
@@ -83,9 +86,9 @@ class UserAPITestCase(GetUserMixin, APITestCase):
 
     def test_update(self):
         """Тест обновления пользователя"""
-        self.get_user()
+        user = self.get_user()
         response = self.client.put(
-            '/auth/user/update/1/',
+            f'/auth/user/update/{user.pk}/',
             {
                 "first_name": "Иван",
                 "last_name": "Абрамов",
@@ -99,7 +102,7 @@ class UserAPITestCase(GetUserMixin, APITestCase):
         self.assertEquals(User.objects.count(), 1)
         self.assertEquals(response.json(),
                           {
-                              "pk": 1,
+                              "pk": ANY,
                               "first_name": "Иван",
                               "last_name": "Абрамов",
                               "email": "test@test.com",
@@ -109,11 +112,11 @@ class UserAPITestCase(GetUserMixin, APITestCase):
 
     def test_delete(self):
         """Тест удаления пользователя"""
-        self.get_user()
+        user = self.get_user()
         self.assertEquals(User.objects.count(), 1)
 
         response = self.client.delete(
-            '/auth/user/delete/1/'
+            f'/auth/user/delete/{user.pk}/'
         )
 
         self.assertEquals(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -121,7 +124,7 @@ class UserAPITestCase(GetUserMixin, APITestCase):
 
     def test_verify(self):
         """Тест ввода кода верификации"""
-        self.client.post(
+        user = self.client.post(
             '/auth/user/create/',
             {
                 'last_name': 'Иванов',
@@ -167,7 +170,6 @@ class UserAPITestCase(GetUserMixin, APITestCase):
             }
 
         )
-        print(response.json())
         self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEquals(
             response.json(),
